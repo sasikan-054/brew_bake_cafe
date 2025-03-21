@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap');
+    </style>
+</head>
+<body class="bg-white font-Roboto">
+
+    <div class="w-screen h-auto bg-no-repeat bg-cover bg-top" style="background-image: url('images/backG.png');">
+
+        <nav class="flex justify-between items-center px-10 py-3">
+
+            <div class="flex items-center space-x-2">
+
+                <div class="w-12">
+                    <img src="images/logo.png" alt="Logo">
+                </div>
+
+                <div class="text-lg font-medium font-Pacifico">
+                    Brew & Bake <span class="text-orange-500">Cafe</span>
+                </div>
+
+            </div>
+
+            <div class="flex justify-center flex-1 space-x-6 font-medium">
+
+                <a href="index.html" class="hover:text-orange-500">Home</a>
+
+                <div class="relative group">
+                    <a href="beverages.html" class="hover:text-orange-500">Product</a>
+
+                    <ul class="absolute left-0 mt-2 w-48 bg-white shadow-md rounded-lg hidden group-hover:block">
+                        <li><a href="beverages.html" class="block px-4 py-2 hover:bg-orange-100 text-gray-800">Beverages</a></li>
+                        <li><a href="bakery.html" class="block px-4 py-2 hover:bg-orange-100 text-gray-800">Bakery</a></li>
+                    </ul>
+                </div>
+
+                <a href="about.html" class="hover:text-orange-500">About us</a>
+
+            </div>
+        
+            <div class="flex items-center space-x-4">
+
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="border px-3 py-1 rounded-full focus:outline-none">
+                </div>
+
+                <a href="shopping.html">
+                    <button class="p-2 bg-white rounded-full hover:bg-orange-600">
+                        <img src="images/shopping-cart.png" alt="Cart" class="w-5 h-5">
+                    </button>
+                </a>
+
+                <a href="login.html"> 
+                    <button class="p-2 bg-blue-400 text-white rounded-full hover:bg-orange-600">
+                        <img src="images/avatar.png" alt="Login" class="w-5 h-5">
+                    </button>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold text-center">Order Summary</h1>
+
+    <div id="order-details" class="bg-gray-100 p-4 mt-4 rounded-lg shadow-md">
+        <!-- แสดงสินค้า -->
+    </div>
+
+    <div class="mt-4">
+        <h2 class="text-lg font-bold">Delivery Method</h2>
+        <select id="delivery-method" class="w-full p-2 border rounded-lg">
+            <option value="pickup">Pick Up at Store</option>
+            <option value="delivery">Delivery</option>
+        </select>
+    </div>
+
+    <div id="address-section" class="mt-4 hidden">
+        <h2 class="text-lg font-bold">Delivery Address</h2>
+        <input type="text" id="address" class="w-full p-2 border rounded-lg" placeholder="Enter your address">
+    </div>
+
+    <div class="mt-4">
+        <h2 class="text-lg font-bold">Payment Method</h2>
+        <select id="payment-method" class="w-full p-2 border rounded-lg">
+            <option value="cod">Cash on Delivery</option>
+            <option value="bank">Bank Transfer</option>
+            <option value="qr">Pay via QR Code</option>
+        </select>
+    </div>
+
+    <div id="upload-slip-section" class="mt-4 hidden">
+        <h2 class="text-lg font-bold">Upload Payment Slip</h2>
+        <input type="file" id="payment-slip" class="w-full p-2 border rounded-lg">
+    </div>
+
+    <div class="mt-4 text-center">
+        <button onclick="confirmOrder()" class="bg-orange-500 text-white py-2 px-6 rounded-lg">
+            Confirm Order
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let cartItems = JSON.parse(sessionStorage.getItem("selectedCart"));
+            let totalAmount = sessionStorage.getItem("totalAmount");
+            let orderDetails = document.getElementById("order-details");
+            orderDetails.innerHTML = cartItems.map(item => `
+                <div class="p-2 border-b">${item.quantity} x ${item.price} ฿</div>
+            `).join("") + `<div class="font-bold text-red-500">Total: ${totalAmount} ฿</div>`;
+
+            document.getElementById("delivery-method").addEventListener("change", function () {
+                document.getElementById("address-section").classList.toggle("hidden", this.value !== "delivery");
+            });
+
+            document.getElementById("payment-method").addEventListener("change", function () {
+                document.getElementById("upload-slip-section").classList.toggle("hidden", this.value !== "bank");
+            });
+        });
+
+        function confirmOrder() {
+            alert("Order Confirmed!");
+            sessionStorage.clear();
+            window.location.href = "tagConfirm.html";
+        }
+    </script>
+
+</body>
+</html>

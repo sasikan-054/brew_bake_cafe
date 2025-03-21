@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap');
+    </style>
+</head>
+<body class="bg-white font-Roboto">
+
+    <div class="w-screen h-auto bg-no-repeat bg-cover bg-top" style="background-image: url('images/backG.png');">
+
+        <nav class="flex justify-between items-center px-10 py-3">
+
+            <div class="flex items-center space-x-2">
+
+                <div class="w-12">
+                    <img src="images/logo.png" alt="Logo">
+                </div>
+
+                <div class="text-lg font-medium font-Pacifico">
+                    Brew & Bake <span class="text-orange-500">Cafe</span>
+                </div>
+
+            </div>
+
+            <div class="flex justify-center flex-1 space-x-6 font-medium">
+
+                <a href="index.html" class="hover:text-orange-500">Home</a>
+
+                <div class="relative group">
+                    <a href="beverages.html" class="hover:text-orange-500">Product</a>
+
+                    <ul class="absolute left-0 mt-2 w-48 bg-white shadow-md rounded-lg hidden group-hover:block">
+                        <li><a href="beverages.html" class="block px-4 py-2 hover:bg-orange-100 text-gray-800">Beverages</a></li>
+                        <li><a href="bakery.html" class="block px-4 py-2 hover:bg-orange-100 text-gray-800">Bakery</a></li>
+                    </ul>
+                </div>
+
+                <a href="about.html" class="hover:text-orange-500">About us</a>
+
+            </div>
+        
+            <div class="flex items-center space-x-4">
+
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="border px-3 py-1 rounded-full focus:outline-none">
+                </div>
+
+                <a href="shopping.html">
+                    <button class="p-2 bg-white rounded-full hover:bg-orange-600">
+                        <img src="images/shopping-cart.png" alt="Cart" class="w-5 h-5">
+                    </button>
+                </a>
+
+                <a href="login.html"> 
+                    <button class="p-2 bg-blue-400 text-white rounded-full hover:bg-orange-600">
+                        <img src="images/avatar.png" alt="Login" class="w-5 h-5">
+                    </button>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="bg-white shadow-3xl shadow-gray-600 drop-shadow-md py-10">
+        <div class="container mx-auto p-6">
+            <div class="container mx-auto p-6">
+                <div class="bg-white rounded-xl shadow-lg shadow-gray-300 p-4 flex items-center w-full border-orange-100 border-4">
+                
+                    <img src="images/001.jpg" alt="Matcha Latte" class="w-16 h-16 rounded-lg object-cover">
+                
+                    <div class="ml-4 flex-1">
+                        <h2 class="font-bold text-lg">ลาเต้ (Matcha Latte)</h2>
+                        <p class="text-gray-500 text-sm">Categories : <span>เย็น (Iced)</span></p>
+                        <p class="text-gray-500 text-sm">Topping : <span>ไข่มุก (Boba), วิปครีม (Whipped Cream), ผงชาเขียว (Matcha Powder)</span></p>
+                    </div>
+                
+                    <div class="text-right">
+                        <p class="text-red-500 font-bold text-lg">79.00 <span class="text-black">Bath</span></p>
+                        <p class="text-gray-600 text-sm">x1</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="h-auto w-full bg-cover bg-bottom py-4" style="background-image: url('images/backG.png');">
+        <div class="p-12">
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Bakery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap');
+    </style>
+</head>
+
+<script>
+    let selectedProductId = null;
+    let basePrice = 0;
+    let selectedDrinkPrice = 0;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        fetchProducts({
+            "Coffee": { id: 7, containerId: "beverages-coffee" },
+            "Tea": { id: 8, containerId: "beverages-tea" },
+            "Smoothies": { id: 9, containerId: "beverages-smoothies" },
+            "Juices": { id: 10, containerId: "beverages-juices" },
+            "Other": { id: 11, containerId: "beverages-other" }
+        });
+        updateCartCount();
+    });
+
+    function fetchProducts(categories) {
+        let subcategoryIds = Object.values(categories).map(cat => cat.id);
+        let queryString = subcategoryIds.join(",");
+
+        fetch(`fetch_products.php?subcategory_ids=${queryString}`)
+            .then(response => response.json())
+            .then(data => {
+                Object.keys(categories).forEach(subcategory => {
+                    let containerId = categories[subcategory].containerId;
+                    let productContainer = document.getElementById(containerId);
+                    productContainer.innerHTML = "";
+
+                    if (data[subcategory]) { 
+                        data[subcategory].forEach(product => {
+                            productContainer.innerHTML += `
+                                <div class="bg-white p-4 rounded-2xl shadow-lg relative overflow-hidden">
+                                    <div class="relative">
+                                        <img src="uploads /${product.image}" alt="${product.name}" class="rounded-xl object-cover w-full h-60">
+                                    </div>
+                                    <h3 class="text-lg font-medium mt-4">${product.name}</h3>
+                                    <p class="text-gray-500 text-sm">${product.price} บาท</p>
+                                    <div class="flex justify-between items-center mt-4">
+                                        <button class="bg-orange-500 text-white px-4 py-1 rounded-md text-sm hover:bg-orange-600 transition">Review</button>
+                                        <div class="flex space-x-2">
+                                            <button class="bg-gray-200 p-2 w-10 h-10 rounded-full border-2 border-black hover:bg-gray-300">❤️</button>
+                                            <button class="bg-orange-400 p-2 w-10 h-10 rounded-full hover:bg-gray-300" onclick="openModal(${product.id}, ${product.price})">🛒</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        productContainer.innerHTML = "<p class='text-gray-500'>No products found.</p>";
+                    }
+                });
+            })
+            .catch(error => console.error("Error fetching products:", error));  
+    }
+
+    function loadDrinkTypes() {
+        fetch("get_drink_types.php")
+            .then(response => response.json())
+            .then(data => {
+                let drinkTypeContainer = document.getElementById("drinkTypeOptions");
+                drinkTypeContainer.innerHTML = "";
+                data.forEach(type => {
+                    drinkTypeContainer.innerHTML += `
+                        <button class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 drink-type-btn hover:bg-orange-400"
+                                onclick="selectDrinkType(${type.id}, ${type.price}, this)" 
+                                data-id="${type.id}" data-price="${type.price}">
+                            ${type.name} (+${type.price} ฿)
+                        </button>
+                    `;
+                });
+            });
+    }
+
+    function loadToppings() {
+        fetch("get_toppings.php")
+            .then(response => response.json())
+            .then(data => {
+                let toppingContainer = document.getElementById("toppingOptions");
+                toppingContainer.innerHTML = "";
+                data.forEach(topping => {
+                    toppingContainer.innerHTML += `
+                        <label class="block">
+                            <input type="checkbox" class="topping-checkbox" value="${topping.price}" onchange="calculateTotal()"> ${topping.name} (+${topping.price} บาท)
+                        </label>
+                    `;
+                });
+            });
+    }
+
+    function openModal(productId, price) {
+        selectedProductId = productId;
+        basePrice = price;
+        selectedDrinkPrice = 0;
+        document.getElementById("drinkModal").classList.remove("hidden");
+        loadDrinkTypes();
+        loadToppings();
+        calculateTotal();
+    }
+
+    function closeModal() {
+        document.getElementById("drinkModal").classList.add("hidden");
+    }
+
+    function selectDrinkType(id, price, element) {
+        selectedDrinkPrice = price;
+        document.querySelectorAll(".drink-type-btn").forEach(btn => btn.classList.remove("bg-orange-400", "text-white"));
+        element.classList.add("bg-orange-400", "text-white");
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+        let total = basePrice + selectedDrinkPrice;
+        document.querySelectorAll(".topping-checkbox:checked").forEach(topping => {
+            total += parseFloat(topping.value);
+        });
+        document.getElementById("totalPrice").textContent = total.toFixed(2) + " ฿";
+    }
+
+    function confirmAddToCart() {
+        let drinkTypeButton = document.querySelector(".drink-type-btn.bg-orange-400");
+        let drinkTypeId = drinkTypeButton ? drinkTypeButton.dataset.id : null;
+
+        let selectedToppings = Array.from(document.querySelectorAll(".topping-checkbox:checked")).map(el => el.value);
+
+        if (!drinkTypeId) {
+            alert("กรุณาเลือกประเภทเครื่องดื่มก่อน!");
+            return;
+        }
+
+        fetch("add_to_cart.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `product_id=${selectedProductId}&quantity=1&drink_type_id=${drinkTypeId}&toppings=${selectedToppings.join(",")}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ สินค้าถูกเพิ่มลงตะกร้า!");
+                updateCartCount();
+                closeModal();
+            } else {
+                alert("❌ เกิดข้อผิดพลาด: " + data.message);
+            }
+        })
+        .catch(error => console.error("Error adding to cart:", error));
+    }
+
+    function updateCartCount() {
+        fetch("get_cart_count.php")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("cart-count").textContent = data.count;
+            });
+    }
+</script>
+
+<body class="bg-[#f5ead9] font-[Roboto]">
+
+    <div class="w-screen h-auto bg-no-repeat bg-cover bg-top" style="background-image: url('images/bg3.png');">
+
+        <nav class="flex justify-between items-center px-10 py-3 shadow-lg">
+
+            <div class="flex items-center space-x-2">
+
+                <div class="w-12">
+                    <img src="images/logo.png" alt="Logo">
+                </div>
+
+                <div class="text-lg font-medium font-Pacifico">
+                    Brew & Bake <span class="text-orange-500">Cafe</span>
+                </div>
+
+            </div>
+
+            <div class="flex justify-center flex-1 space-x-6 font-medium">
+
+                <a href="index.html" class="hover:text-orange-500">Home</a>
+
+                <div class="relative group">
+                    <a href="#" class="hover:text-orange-500">Product</a>
+
+                    <ul class="absolute left-0 mt-2 w-48 bg-white shadow-md rounded-lg hidden group-hover:block">
+                        <li><a href="#" class="block px-4 py-2 hover:bg-orange-100 text-gray-800">Beverages</a></li>
+                        <li><a href="bakery.html" class="block px-4 py-2 hover:bg-orange-100 text-gray-800">Bakery</a></li>
+                    </ul>
+                </div>
+
+                <a href="about.html" class="hover:text-orange-500">About us</a>
+
+            </div>
+        
+            <div class="flex items-center space-x-4">
+
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="border px-3 py-1 rounded-full focus:outline-none">
+                </div>
+
+                <a href="shopping.html">
+                    <button class="p-2 bg-white rounded-full hover:bg-orange-600">
+                        <img src="images/shopping-cart.png" alt="Cart" class="w-5 h-5">
+                    </button>
+                </a>
+
+                <a href="login.html"> 
+                    <button class="p-2 bg-blue-400 text-white rounded-full hover:bg-orange-600">
+                        <img src="images/avatar.png" alt="Login" class="w-5 h-5">
+                    </button>
+                </a>
+            
+            </div>
+        </nav>
+
+        <section class="container w-5/6 mx-auto py-20">
+            <div class="flex justify-center gap-4 mb-6">
+                <a href="#">
+                    <div class="bg-orange-200 px-52 py-10 rounded-lg shadow-md flex flex-col items-center hover:bg-gray-100 transition">
+                        <img src="images/herbal-tea.png" alt="Beverages" class="w-20 h-20">
+                        <p class="font-semibold">Beverages</p>
+                    </div>
+                </a>
+                
+                <a href="bakery.html">
+                    <div class="bg-white px-52 py-10 rounded-lg shadow-md flex flex-col items-center hover:bg-gray-100 transition">
+                        <img src="images/bread.png" alt="Bakery" class="w-20 h-20">
+                        <p class="font-semibold">Bakery</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        
+    </div>
+
+    <div class="bg-[#f5ead9]">
+        <div class="container mx-auto p-4">
+            <h2 class="text-xl font-bold mb-4">Coffee menu</h2>
+        
+            <div id="beverages-coffee" class="grid grid-cols-4 gap-6">
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#f5ead9]">
+        <div class="container mx-auto p-4">
+            <h2 class="text-xl font-bold mb-4">Tea menu</h2>
+        
+            <div id="beverages-tea" class="grid grid-cols-4 gap-6">
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#f5ead9]">
+        <div class="container mx-auto p-4">
+            <h2 class="text-lg font-semibold mb-3">Smoothies menu</h2>
+
+            <div id="beverages-smoothies" class="grid grid-cols-4 gap-6">
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#f5ead9]">
+        <div class="container mx-auto p-4">
+            <h2 class="text-lg font-semibold mb-3">Juices menu</h2>
+
+            <div id="beverages-juices" class="grid grid-cols-4 gap-6">
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="w-screen h-auto bg-cover bg-bottom" style="background-image: url('images/bg2.png');">
+        <div class="container mx-auto p-4">
+            <h2 class="text-lg font-semibold mb-3">Other menu</h2>
+            <div id="beverages-other" class="grid grid-cols-4 gap-6">
+                
+            </div>
+        </div>      
+    </div>
+
+    <!-- Modal สำหรับเลือกประเภทเครื่องดื่ม + Toppings -->
+    <div id="drinkModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+        <div class="max-w-lg mx-auto bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold text-gray-800 text-center">เลือกตัวเลือก</h2>
+            
+            <!-- เลือกประเภทเครื่องดื่ม -->
+            <h3 class="text-lg font-semibold mt-4">ประเภทเครื่องดื่ม</h3>
+            <div id="drinkTypeOptions" class="flex space-x-2 my-3"></div>
+
+            <!-- เลือก Toppings -->
+            <h3 class="text-lg font-semibold mt-4">เลือก Toppings</h3>
+            <div id="toppingOptions" class="mt-3 space-y-2"></div>
+            
+            <div class="flex justify-between items-center mt-4 font-bold text-lg">
+                <span>ทั้งหมด</span>
+                <span id="totalPrice">0 ฿</span>
+            </div>
+            
+            <button onclick="confirmAddToCart()" class="w-full mt-4 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600">
+                Add to cart
+            </button>
+            <button onclick="closeModal()" class="w-full mt-4 bg-gray-300 py-2 rounded-lg hover:bg-gray-400">
+                Cancel
+            </button>
+        </div>
+    </div>
+    
+</body>
+</html>

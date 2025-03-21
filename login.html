@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap');
+    </style>
+</head>
+<body class="bg-white font-[Roboto]">
+
+    <div class="w-screen h-auto bg-no-repeat bg-cover bg-top" style="background-image: url('images/backG.png');">
+
+        <nav class="flex justify-between items-center px-10 py-3 shadow-lg">
+
+            <div class="flex items-center space-x-2">
+
+                <div class="w-12">
+                    <img src="images/logo.png" alt="Logo">
+                </div>
+
+                <div class="text-lg font-medium font-Pacifico">
+                    Brew & Bake <span class="text-orange-500">Cafe</span>
+                </div>
+
+            </div>
+
+            <div class="flex justify-center flex-1 space-x-6 font-medium">
+
+                <a href="index.html" class="hover:text-orange-500">Home</a>
+
+                <div class="relative group">
+                    <a href="beverages.html" class="hover:text-orange-500">Product</a>
+
+                    <ul class="absolute left-0 mt-2 w-48 bg-white shadow-md rounded-lg hidden group-hover:block">
+                        <li><a href="beverages.html" class="block px-4 py-2 hover:bg-orange-100 text-gray-800">Beverages</a></li>
+                        <li><a href="bakery.html" class="block px-4 py-2 hover:bg-orange-100 text-gray-800">Bakery</a></li>
+                    </ul>
+                </div>
+
+                <a href="about.html" class="hover:text-orange-500">About us</a>
+
+            </div>
+        
+            <div class="flex items-center space-x-4">
+
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="border px-3 py-1 rounded-full focus:outline-none">
+                </div>
+
+                <a href="shopping.html">
+                    <button class="p-2 bg-white rounded-full hover:bg-orange-600">
+                        <img src="images/shopping-cart.png" alt="Cart" class="w-5 h-5">
+                    </button>
+                </a>
+
+                <a href="#"> 
+                    <button class="p-2 bg-blue-400 text-white rounded-full hover:bg-orange-600">
+                        <img src="images/avatar.png" alt="Login" class="w-5 h-5">
+                    </button>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <section class="container w-5/6 mx-auto py-20 flex flex-row items-center justify-center">
+
+        <div class="w-full lg:w-3/4 xl:w-2/3 bg-white rounded-xl shadow-lg flex overflow-hidden">
+
+            <div class="w-1/2 hidden md:block">
+                <img src="images/008.jpg" alt="Cafe" class="w-full h-full object-cover">
+            </div>
+    
+            <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
+                <h2 class="text-xl font-bold text-cyan-400 mb-6">Login</h2>
+    
+                <form action="login.php" method="POST">
+                    <input type="email" name="email" placeholder="Email" required 
+                        class="w-full border px-4 py-2 rounded-md focus:ring-2 focus:ring-orange-400 mb-4">
+                    
+                    <input type="password" name="password" placeholder="Password" required 
+                        class="w-full border px-4 py-2 rounded-md focus:ring-2 focus:ring-orange-400 mb-4">
+    
+                    <button type="submit" 
+                        class="w-full bg-orange-500 text-white font-semibold py-2 rounded-md hover:bg-orange-600 transition mb-2">
+                        Login
+                    </button>
+                </form>
+    
+                <p class="text-xs text-gray-500 text-right">
+                    ลืมรหัสผ่านใช่หรือไม่? <a href="#" class="text-cyan-400">กู้คืนรหัสผ่าน</a>
+                </p>
+    
+                <a href="regis.html" class="w-full bg-gray-500 text-white font-semibold py-2 mt-10 rounded-md hover:bg-gray-600 transition text-center block">
+                    Register
+                </a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
